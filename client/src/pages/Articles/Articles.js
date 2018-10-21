@@ -11,18 +11,25 @@ class Articles extends Component {
   state = {
     articles: [],
     title: "",
-    author: "",
-    synopsis: ""
+    date: "",
+    url: "",
+    searchTitle: "",
+    searchStartYr:"",
+    searchEndYr:""
   };
 
   componentDidMount() {
     this.loadArticles();
   }
 
+  goToURL = url => {
+    window.open(url, "_blank")
+  }
+
   loadArticles = () => {
     API.getArticles()
       .then(res =>
-        this.setState({ articles: res.data, title: "", author: "", synopsis: "" })
+        this.setState({ articles: res.data, title: "", date: "", url: "" })
       )
       .catch(err => console.log(err));
   };
@@ -42,7 +49,7 @@ class Articles extends Component {
 
   handleFormSubmit = event => {
     event.preventDefault();
-    if (this.state.title && this.state.author) {
+    if (this.state.searchTitle && this.state.searchStartYr && this.state.searchEndYr) {
       API.saveArticle({
         title: this.state.title,
         author: this.state.author,
@@ -63,28 +70,28 @@ class Articles extends Component {
             </Jumbotron>
             <form>
               <Input
-                value={this.state.title}
+                value={this.state.searchTitle}
                 onChange={this.handleInputChange}
-                name="title"
-                placeholder="Title (required)"
+                name="search-title"
+                placeholder="Topic (required)"
               />
               <Input
-                value={this.state.author}
+                value={this.state.searchStartYr}
                 onChange={this.handleInputChange}
-                name="author"
-                placeholder="Author (required)"
+                name="search-start-yr"
+                placeholder="Start Year (required)"
               />
               <TextArea
-                value={this.state.synopsis}
+                value={this.state.searchEndYr}
                 onChange={this.handleInputChange}
                 name="synopsis"
-                placeholder="Synopsis (Optional)"
+                placeholder="End Year (Optional)"
               />
               <FormBtn
                 disabled={!(this.state.author && this.state.title)}
                 onClick={this.handleFormSubmit}
               >
-                Submit Article
+                Search
               </FormBtn>
             </form>
           </Col>
@@ -96,11 +103,15 @@ class Articles extends Component {
               <List>
                 {this.state.articles.map(article => (
                   <ListItem key={article._id}>
-                    <Link to={"/articles/" + article._id}>
-                      <strong>
-                        {article.title} by {article.author}
+                    {/* <Link to={"/articles/" + article._id}> */}
+                    {/* <Link to={article.url}> */}
+                      <strong onClick = {() => this.goToURL(article.url)}>
+                        {article.title}
                       </strong>
-                    </Link>
+                      <strong>
+                        {article.date}
+                        </strong>
+                    {/* </Link> */}
                     <DeleteBtn onClick={() => this.deleteArticle(article._id)} />
                   </ListItem>
                 ))}
