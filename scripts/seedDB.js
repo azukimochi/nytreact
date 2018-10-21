@@ -5,10 +5,10 @@ const db = require("../models");
 
 mongoose.connect(
   process.env.MONGODB_URI ||
-  "mongodb://localhost/reactreadinglist"
+  "mongodb://localhost/nytreact"
 );
 
-const bookSeed = [
+const articleSeed = [
   {
     title: "The Dead Zone",
     author: "Stephen King",
@@ -123,9 +123,9 @@ const bookSeed = [
   }
 ];
 
-db.Book
+db.Article
   .remove({})
-  .then(() => db.Book.collection.insertMany(bookSeed))
+  .then(() => db.Article.collection.insertMany(articleSeed))
   .then(data => {
     console.log(data.result.n + " records inserted!");
     process.exit(0);
