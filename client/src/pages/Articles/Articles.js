@@ -1,47 +1,80 @@
 import React, { Component } from "react";
 import DeleteBtn from "../../components/DeleteBtn";
+import SaveBtn from "../../components/SaveBtn";
 import Jumbotron from "../../components/Jumbotron";
 import API from "../../utils/API";
 import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
 import { List, ListItem } from "../../components/List";
 import { Input, TextArea, FormBtn } from "../../components/Form";
+import axios from "axios";
+const apiURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
+const apiKey = 'b9f91d369ff59547cd47b931d8cbc56b:0:74623931';
 
 class Articles extends Component {
   state = {
-    articles: [],
-    title: "",
-    date: "",
-    url: "",
+    savedArticles: [],
+    scrapedArticles: [],
     searchTitle: "",
-    searchStartYr:"",
-    searchEndYr:""
+    searchStartYr: "",
+    searchEndYr: ""
+
   };
 
+
   componentDidMount() {
-    this.loadArticles();
+    this.getSavedArticles();
   }
 
   goToURL = url => {
     window.open(url, "_blank")
   }
 
-  loadArticles = () => {
+  getSavedArticles = updatedResults => {
     API.getArticles()
-      .then(res =>
-        this.setState({ articles: res.data, title: "", date: "", url: "" })
-      )
+      .then(res => {
+        console.log(res)
+
+        this.setState({
+          savedArticles: res.data,
+          scrapedArticles: updatedResults || [],
+          searchTitle: "",
+          searchStartYr: "",
+          searchEndYr: ""
+        })
+      })
       .catch(err => console.log(err));
   };
 
+  getScrapedArticles = res => {
+    this.setState({
+      scrapedArticles: res.data.response.docs
+    })
+    console.log(this.state.scrapedArticles)
+  }
+
+  saveArticle = (data) => {
+    API.saveArticle({
+      title: data.headline.main,
+      date: data.pub_date,
+      url: data.web_url
+    })
+      .then(res => {
+        const updatedResults = this.state.scrapedArticles.filter(article => article._id !== data._id)
+        this.getSavedArticles(updatedResults)
+      })
+      .catch(err => console.log(err))
+  }
+
   deleteArticle = id => {
     API.deleteArticle(id)
-      .then(res => this.loadArticles())
+      .then(res => this.getSavedArticles())
       .catch(err => console.log(err));
   };
 
   handleInputChange = event => {
     const { name, value } = event.target;
+    console.log({ name, value })
     this.setState({
       [name]: value
     });
@@ -50,12 +83,14 @@ class Articles extends Component {
   handleFormSubmit = event => {
     event.preventDefault();
     if (this.state.searchTitle && this.state.searchStartYr && this.state.searchEndYr) {
-      API.saveArticle({
-        title: this.state.title,
-        author: this.state.author,
-        synopsis: this.state.synopsis
-      })
-        .then(res => this.loadArticles())
+      console.log("This is the topic: " + this.state.searchTitle);
+      console.log("This is the start year: " + this.state.searchStartYr);
+      console.log("This is the end year: " + this.state.searchEndYr);
+      axios.get(`${apiURL}?q=${this.state.searchTitle}?begin_date=${this.state.searchStartYr}?end_date=${this.state.searchEndYr}&api-key=${apiKey}`)
+        .then(res => {
+          console.log("Axios http call worked!");
+          this.getScrapedArticles(res)
+        })
         .catch(err => console.log(err));
     }
   };
@@ -66,59 +101,86 @@ class Articles extends Component {
         <Row>
           <Col size="md-6">
             <Jumbotron>
-              <h1>What Article Should I Read?</h1>
+              <h1>What Articles Should I Read?</h1>
             </Jumbotron>
             <form>
               <Input
                 value={this.state.searchTitle}
                 onChange={this.handleInputChange}
-                name="search-title"
+                name="searchTitle"
                 placeholder="Topic (required)"
               />
               <Input
                 value={this.state.searchStartYr}
                 onChange={this.handleInputChange}
-                name="search-start-yr"
+                name="searchStartYr"
                 placeholder="Start Year (required)"
               />
-              <TextArea
+              <Input
                 value={this.state.searchEndYr}
                 onChange={this.handleInputChange}
-                name="synopsis"
+                name="searchEndYr"
                 placeholder="End Year (Optional)"
               />
               <FormBtn
-                disabled={!(this.state.author && this.state.title)}
+                disabled={!(this.state.searchStartYr && this.state.searchEndYr)}
                 onClick={this.handleFormSubmit}
               >
                 Search
               </FormBtn>
             </form>
           </Col>
+
           <Col size="md-6 sm-12">
             <Jumbotron>
-              <h1>Articles On My List</h1>
+              <h1>Search Results</h1>
             </Jumbotron>
-            {this.state.articles.length ? (
+            {this.state.scrapedArticles.length ? (
               <List>
-                {this.state.articles.map(article => (
+                {this.state.scrapedArticles.map(article => (
                   <ListItem key={article._id}>
                     {/* <Link to={"/articles/" + article._id}> */}
                     {/* <Link to={article.url}> */}
-                      <strong onClick = {() => this.goToURL(article.url)}>
-                        {article.title}
-                      </strong>
-                      <strong>
-                        {article.date}
-                        </strong>
+                    <strong onClick={() => this.goToURL(article.web_url)}>
+                      {article.headline.main}
+                    </strong>
+                    <strong>
+                      {article.pub_date}
+                    </strong>
+                    {/* </Link> */}
+                    <SaveBtn onClick={() => this.saveArticle(article)} />
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+                <h3>No Results to Display</h3>
+              )}
+          </Col>
+
+          <Col size="md-6 sm-12">
+            <Jumbotron>
+              <h1>Saved Articles</h1>
+            </Jumbotron>
+            {this.state.savedArticles.length ? (
+              <List>
+                {this.state.savedArticles.map(article => (
+                  <ListItem key={article._id}>
+                    {/* <Link to={"/articles/" + article._id}> */}
+                    {/* <Link to={article.url}> */}
+                    <strong onClick={() => this.goToURL(article.url)}>
+                      {article.title}
+                    </strong>
+                    <strong>
+                      {article.date}
+                    </strong>
                     {/* </Link> */}
                     <DeleteBtn onClick={() => this.deleteArticle(article._id)} />
                   </ListItem>
                 ))}
               </List>
             ) : (
-              <h3>No Results to Display</h3>
-            )}
+                <h3>No Results to Display</h3>
+              )}
           </Col>
         </Row>
       </Container>
