@@ -21,7 +21,6 @@ class Articles extends Component {
 
   };
 
-
   componentDidMount() {
     this.getSavedArticles();
   }
@@ -114,13 +113,13 @@ class Articles extends Component {
                 value={this.state.searchStartYr}
                 onChange={this.handleInputChange}
                 name="searchStartYr"
-                placeholder="Start Year (required)"
+                placeholder="Start Year (YYYY/MM/DD) (required)"
               />
               <Input
                 value={this.state.searchEndYr}
                 onChange={this.handleInputChange}
                 name="searchEndYr"
-                placeholder="End Year (Optional)"
+                placeholder="End Year (YYYY/MM/DD) (optional)"
               />
               <FormBtn
                 disabled={!(this.state.searchStartYr && this.state.searchEndYr)}
@@ -139,18 +138,18 @@ class Articles extends Component {
               <List>
                 {this.state.scrapedArticles.map(article => (
                   <ListItem key={article._id}>
-                    {/* <Link to={"/articles/" + article._id}> */}
-                    {/* <Link to={article.url}> */}
+                  <p>
                     <strong onClick={() => this.goToURL(article.web_url)}>
                       {article.headline.main}
                     </strong>
-                    <strong>
-                      {article.pub_date}
-                    </strong>
-                    {/* </Link> */}
                     <SaveBtn onClick={() => this.saveArticle(article)} />
+                    </p>
+                    <p>
+                      Date: {article.pub_date.slice(0, 10)}
+                    </p>
                   </ListItem>
                 ))}
+              
               </List>
             ) : (
                 <h3>No Results to Display</h3>
@@ -167,14 +166,15 @@ class Articles extends Component {
                   <ListItem key={article._id}>
                     {/* <Link to={"/articles/" + article._id}> */}
                     {/* <Link to={article.url}> */}
+                    <p>
                     <strong onClick={() => this.goToURL(article.url)}>
-                      {article.title}
+                      {article.title} 
                     </strong>
-                    <strong>
-                      {article.date}
-                    </strong>
-                    {/* </Link> */}
                     <DeleteBtn onClick={() => this.deleteArticle(article._id)} />
+                    </p>
+                    <p>
+                      Published Date: {article.date.slice(0, 10)}
+                    </p>
                   </ListItem>
                 ))}
               </List>
