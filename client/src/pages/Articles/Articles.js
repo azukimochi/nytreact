@@ -78,9 +78,8 @@ class Articles extends Component {
       [name]: value
     });
   };
-
-  handleFormSubmit = event => {
-    event.preventDefault();
+  
+  scrapeArticlesFunction = () => {
     if (this.state.searchTitle && this.state.searchStartYr && this.state.searchEndYr) {
       console.log("This is the topic: " + this.state.searchTitle);
       console.log("This is the start year: " + this.state.searchStartYr);
@@ -92,6 +91,19 @@ class Articles extends Component {
         })
         .catch(err => console.log(err));
     }
+  }
+  handleFormSubmit = event => {
+    event.preventDefault();
+    const startYrLength = this.state.searchStartYr.length
+    const endYrLength = this.state.searchEndYr.length
+    if (startYrLength == 8 && endYrLength == 8) {
+      console.log("All parametres met!")
+      this.scrapeArticlesFunction()
+    } else {
+      console.log("Need to reconfigure!")
+    }
+
+
   };
 
   render() {
