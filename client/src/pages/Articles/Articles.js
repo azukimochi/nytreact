@@ -44,6 +44,17 @@ class Articles extends Component {
       .catch(err => console.log(err));
   };
 
+  getSavedArticlesAgain = () => {
+    API.getArticles()
+      .then(res => {
+        // console.log(res)
+        this.setState({
+          savedArticles: res.data
+        })
+      })
+      .catch(err => console.log(err));
+  };
+
   getScrapedArticles = res => {
     this.setState({
       scrapedArticles: res.data.response.docs,
@@ -69,7 +80,7 @@ class Articles extends Component {
 
   deleteArticle = id => {
     API.deleteArticle(id)
-      .then(res => this.getSavedArticles())
+      .then(res => this.getSavedArticlesAgain())
       .catch(err => console.log(err));
   };
 
