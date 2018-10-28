@@ -35,7 +35,7 @@ class Articles extends Component {
   getSavedArticles = updatedResults => {
     API.getArticles()
       .then(res => {
-        console.log(res)
+        // console.log(res)
         this.setState({
           savedArticles: res.data,
           scrapedArticles: updatedResults || []
@@ -75,7 +75,7 @@ class Articles extends Component {
 
   handleInputChange = event => {
     const { name, value } = event.target;
-    console.log({ name, value })
+    // console.log({ name, value })
     this.setState({
       [name]: value
     });
@@ -83,12 +83,12 @@ class Articles extends Component {
 
   scrapeArticlesFunction = () => {
     if (this.state.searchTitle && this.state.searchStartYr && this.state.searchEndYr) {
-      console.log("This is the topic: " + this.state.searchTitle);
-      console.log("This is the start year: " + this.state.searchStartYr);
-      console.log("This is the end year: " + this.state.searchEndYr);
+      // console.log("This is the topic: " + this.state.searchTitle);
+      // console.log("This is the start year: " + this.state.searchStartYr);
+      // console.log("This is the end year: " + this.state.searchEndYr);
       axios.get(`${apiURL}?q=${this.state.searchTitle}?begin_date=${this.state.searchStartYr}?end_date=${this.state.searchEndYr}&api-key=${apiKey}`)
         .then(res => {
-          console.log("Axios http call worked!");
+          // console.log("Axios http call worked!");
           this.getScrapedArticles(res)
         })
         .catch(err => console.log(err));
@@ -99,7 +99,7 @@ class Articles extends Component {
     const startYrLength = this.state.searchStartYr.length
     const endYrLength = this.state.searchEndYr.length
     if (startYrLength == 4 && endYrLength == 4) {
-      console.log("All parametres met!")
+      // console.log("All parametres met!")
       this.scrapeArticlesFunction()
     } else {
       console.log("Need to reconfigure!")
@@ -160,7 +160,7 @@ class Articles extends Component {
                       <SaveBtn onClick={() => this.saveArticle(article)} />
                     </p>
                     <p>
-                      Published Date: {article.pub_date.slice(0, 10)}
+                      Published Date: {article.pub_date || "None"}
                     </p>
                   </ListItem>
                 ))}
