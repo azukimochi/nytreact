@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import DeleteBtn from "../../components/DeleteBtn";
 import SaveBtn from "../../components/SaveBtn";
 import Jumbotron from "../../components/Jumbotron";
+import Home from "../../components/Home";
+import Saved from "../../components/Saved";
 import API from "../../utils/API";
 import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
@@ -33,13 +35,9 @@ class Articles extends Component {
     API.getArticles()
       .then(res => {
         console.log(res)
-
         this.setState({
           savedArticles: res.data,
-          scrapedArticles: updatedResults || [],
-          searchTitle: "",
-          searchStartYr: "",
-          searchEndYr: ""
+          scrapedArticles: updatedResults || []
         })
       })
       .catch(err => console.log(err));
@@ -47,7 +45,10 @@ class Articles extends Component {
 
   getScrapedArticles = res => {
     this.setState({
-      scrapedArticles: res.data.response.docs
+      scrapedArticles: res.data.response.docs,
+      searchTitle: "",
+      searchStartYr: "",
+      searchEndYr: ""
     })
     console.log(this.state.scrapedArticles)
   }
@@ -78,7 +79,7 @@ class Articles extends Component {
       [name]: value
     });
   };
-  
+
   scrapeArticlesFunction = () => {
     if (this.state.searchTitle && this.state.searchStartYr && this.state.searchEndYr) {
       console.log("This is the topic: " + this.state.searchTitle);
@@ -96,7 +97,7 @@ class Articles extends Component {
     event.preventDefault();
     const startYrLength = this.state.searchStartYr.length
     const endYrLength = this.state.searchEndYr.length
-    if (startYrLength == 8 && endYrLength == 8) {
+    if (startYrLength == 4 && endYrLength == 4) {
       console.log("All parametres met!")
       this.scrapeArticlesFunction()
     } else {
@@ -110,10 +111,11 @@ class Articles extends Component {
     return (
       <Container fluid>
         <Row>
-          <Col size="md-6">
-            <Jumbotron>
-              <h1>What Articles Should I Read?</h1>
-            </Jumbotron>
+          <Col size="md-12">
+      <Home>
+            <header>
+              <h1>Search</h1>
+            </header>
             <form>
               <Input
                 value={this.state.searchTitle}
@@ -125,13 +127,13 @@ class Articles extends Component {
                 value={this.state.searchStartYr}
                 onChange={this.handleInputChange}
                 name="searchStartYr"
-                placeholder="Start Year (YYYY/MM/DD) (required)"
+                placeholder="Start Year (required)"
               />
               <Input
                 value={this.state.searchEndYr}
                 onChange={this.handleInputChange}
                 name="searchEndYr"
-                placeholder="End Year (YYYY/MM/DD) (optional)"
+                placeholder="End Year (required)"
               />
               <FormBtn
                 disabled={!(this.state.searchStartYr && this.state.searchEndYr)}
@@ -140,38 +142,42 @@ class Articles extends Component {
                 Search
               </FormBtn>
             </form>
+            </Home>
           </Col>
 
-          <Col size="md-6 sm-12">
-            <Jumbotron>
-              <h1>Search Results</h1>
-            </Jumbotron>
+          <Col size="md-12 sm-12">
+          <Home>
+            <header>
+              <h1>Results</h1>
+            </header>
             {this.state.scrapedArticles.length ? (
               <List>
                 {this.state.scrapedArticles.map(article => (
                   <ListItem key={article._id}>
-                  <p>
-                    <strong onClick={() => this.goToURL(article.web_url)}>
-                      {article.headline.main}
-                    </strong>
-                    <SaveBtn onClick={() => this.saveArticle(article)} />
+                    <p>
+                      <strong onClick={() => this.goToURL(article.web_url)}>
+                        {article.headline.main}
+                      </strong>
+                      <SaveBtn onClick={() => this.saveArticle(article)} />
                     </p>
                     <p>
-                      Date: {article.pub_date.slice(0, 10)}
+                      Published Date: {article.pub_date.slice(0, 10)}
                     </p>
                   </ListItem>
                 ))}
-              
+
               </List>
             ) : (
                 <h3>No Results to Display</h3>
               )}
+            </Home>
           </Col>
 
-          <Col size="md-6 sm-12">
-            <Jumbotron>
+          <Col size="md-12 sm-12">
+          <Saved>
+            <header>
               <h1>Saved Articles</h1>
-            </Jumbotron>
+            </header>
             {this.state.savedArticles.length ? (
               <List>
                 {this.state.savedArticles.map(article => (
@@ -179,10 +185,10 @@ class Articles extends Component {
                     {/* <Link to={"/articles/" + article._id}> */}
                     {/* <Link to={article.url}> */}
                     <p>
-                    <strong onClick={() => this.goToURL(article.url)}>
-                      {article.title} 
-                    </strong>
-                    <DeleteBtn onClick={() => this.deleteArticle(article._id)} />
+                      <strong onClick={() => this.goToURL(article.url)}>
+                        {article.title}
+                      </strong>
+                      <DeleteBtn onClick={() => this.deleteArticle(article._id)} />
                     </p>
                     <p>
                       Published Date: {article.date.slice(0, 10)}
@@ -193,6 +199,7 @@ class Articles extends Component {
             ) : (
                 <h3>No Results to Display</h3>
               )}
+              </Saved>
           </Col>
         </Row>
       </Container>
