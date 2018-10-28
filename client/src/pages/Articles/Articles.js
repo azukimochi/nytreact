@@ -1,14 +1,15 @@
 import React, { Component } from "react";
 import DeleteBtn from "../../components/DeleteBtn";
 import SaveBtn from "../../components/SaveBtn";
-import Jumbotron from "../../components/Jumbotron";
 import Home from "../../components/Home";
+import Header from "../../components/Header";
+import Heading from "../../components/Heading";
 import Saved from "../../components/Saved";
 import API from "../../utils/API";
 import { Link } from "react-router-dom";
 import { Col, Row, Container } from "../../components/Grid";
 import { List, ListItem } from "../../components/List";
-import { Input, TextArea, FormBtn } from "../../components/Form";
+import { Input, FormBtn } from "../../components/Form";
 import axios from "axios";
 const apiURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
 const apiKey = 'b9f91d369ff59547cd47b931d8cbc56b:0:74623931';
@@ -112,44 +113,42 @@ class Articles extends Component {
       <Container fluid>
         <Row>
           <Col size="md-12">
+            <Header>
+              Search
+            </Header>
       <Home>
-            <header>
-              <h1>Search</h1>
-            </header>
             <form>
+              <Heading>Topic (required)</Heading>
               <Input
                 value={this.state.searchTitle}
                 onChange={this.handleInputChange}
                 name="searchTitle"
-                placeholder="Topic (required)"
               />
+              <Heading>Start Year (required)</Heading>
               <Input
                 value={this.state.searchStartYr}
                 onChange={this.handleInputChange}
                 name="searchStartYr"
-                placeholder="Start Year (required)"
               />
+              <Heading>Ending Year (required)</Heading>
               <Input
                 value={this.state.searchEndYr}
                 onChange={this.handleInputChange}
                 name="searchEndYr"
-                placeholder="End Year (required)"
               />
-              <FormBtn
-                disabled={!(this.state.searchStartYr && this.state.searchEndYr)}
-                onClick={this.handleFormSubmit}
-              >
+              <FormBtn disabled={!(this.state.searchStartYr && this.state.searchEndYr)}
+                onClick={this.handleFormSubmit}>
                 Search
-              </FormBtn>
+                </FormBtn>
             </form>
             </Home>
           </Col>
 
           <Col size="md-12 sm-12">
+            <Header>
+              Results
+            </Header>
           <Home>
-            <header>
-              <h1>Results</h1>
-            </header>
             {this.state.scrapedArticles.length ? (
               <List>
                 {this.state.scrapedArticles.map(article => (
@@ -168,16 +167,16 @@ class Articles extends Component {
 
               </List>
             ) : (
-                <h3>No Results to Display</h3>
+                <Heading>No Results to Display</Heading>
               )}
             </Home>
           </Col>
 
           <Col size="md-12 sm-12">
+            <Header>
+              Saved Articles
+            </Header>
           <Saved>
-            <header>
-              <h1>Saved Articles</h1>
-            </header>
             {this.state.savedArticles.length ? (
               <List>
                 {this.state.savedArticles.map(article => (
@@ -197,7 +196,7 @@ class Articles extends Component {
                 ))}
               </List>
             ) : (
-                <h3>No Results to Display</h3>
+                <Heading>No Results to Display</Heading>
               )}
               </Saved>
           </Col>

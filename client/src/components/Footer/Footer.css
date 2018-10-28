@@ -1,0 +1,12 @@
+.footerHeader {
+    text-align: center;
+    background-color: purple;
+    height: 30px;
+    margin-top: 20px
+}
+
+.footerTitle {
+    padding-top: 4px;
+    font-size: 15px;
+    color: white;
+}

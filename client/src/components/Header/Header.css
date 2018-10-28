@@ -1,0 +1,9 @@
+.header {
+    text-align: center;
+    font-size: 50px;
+    background-color: purple;
+    border: 3px;
+    color: white;
+    border-style: solid;
+    border-color: black;
+}

@@ -1,0 +1,11 @@
+.navHeader {
+    text-align: center;
+    background-color: purple;
+    height: 50px;
+    margin-bottom: 20px
+}
+
+.navTitle {
+    font-size: 30px;
+    color: white;
+}
